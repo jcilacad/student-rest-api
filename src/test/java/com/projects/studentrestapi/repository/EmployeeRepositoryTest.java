@@ -50,11 +50,30 @@ public class EmployeeRepositoryTest {
 
         studentRepository.save(student1);
         studentRepository.save(student2);
-        // when - action or behaviour that we are going testing
+        // when - action or behaviour that we are going to test
         List<Student> students = studentRepository.findAll();
         // then - verify the output
         assertThat(students).isNotNull();
         assertThat(students.size()).isEqualTo(2);
     }
+
+    @DisplayName("JUnit test for find by id operation")
+    @Test
+    public void givenStudentObject_whenFindById_thenReturnStudentObject() {
+        // given - precondition or setup
+        Student student = Student.builder()
+                .firstName("John Christopher")
+                .lastName("Ilacad")
+                .email("john@sample.com")
+                .build();
+        Student savedStudent = studentRepository.save(student);
+        // when - action or behaviour that we are going to test
+        Student studentDB = studentRepository.findById(savedStudent.getId()).get();
+        // then - verify the output
+        assertThat(studentDB).isNotNull();
+    }
+
+
+
 }
 
