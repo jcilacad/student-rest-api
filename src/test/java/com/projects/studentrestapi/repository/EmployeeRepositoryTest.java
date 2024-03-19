@@ -21,7 +21,7 @@ public class EmployeeRepositoryTest {
     private Student student;
 
     @BeforeEach
-    private void setup() {
+    public void setup() {
         student = Student.builder()
                 .firstName("John Christopher")
                 .lastName("Ilacad")
