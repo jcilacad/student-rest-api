@@ -2,7 +2,7 @@ package com.projects.studentrestapi.service.impl;
 
 import com.projects.studentrestapi.dto.StudentDto;
 import com.projects.studentrestapi.entity.Student;
-import com.projects.studentrestapi.exception.ResourceNotFoundException;
+import com.projects.studentrestapi.exception.UserAlreadyExistsException;
 import com.projects.studentrestapi.mapper.StudentMapper;
 import com.projects.studentrestapi.repository.StudentRepository;
 import com.projects.studentrestapi.service.StudentService;
@@ -23,8 +23,19 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> foundStudent = studentRepository
                 .findByEmail(student.getEmail());
         if (foundStudent.isPresent()) {
-            throw new ResourceNotFoundException("Student already exists with email : " + student.getEmail());
+            throw new UserAlreadyExistsException("Student already exists with email : " + student.getEmail());
         }
-        return StudentMapper.INSTANCE.mapToDto(studentRepository.save(student));
+        Student savedStudent = studentRepository.save(student);
+        System.out.println("Saved student from impl" + savedStudent.getEmail());
+        return StudentMapper.INSTANCE.mapToDto(savedStudent);
+    }
+
+    @Override
+    public Student saveStudentEntity(Student student) {
+        Optional<Student> findStudent = studentRepository.findByEmail(student.getEmail());
+        if (findStudent.isPresent()) {
+            throw new UserAlreadyExistsException("Student already exist with email: " + student.getEmail());
+        }
+        return studentRepository.save(student);
     }
 }
