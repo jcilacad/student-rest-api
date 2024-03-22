@@ -14,12 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,7 +48,7 @@ public class StudentServiceTest {
     // TODO: Find a reference why using mapper didn't work on this
     @Test
     public void givenStudentObject_whenSaveStudent_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         StudentDto studentDto = StudentDto.builder()
                 .id(100L)
                 .firstName("John Christopher")
@@ -54,35 +57,103 @@ public class StudentServiceTest {
                 .build();
         Student student = StudentMapper.INSTANCE.mapToEntity(studentDto);
         given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.empty());
-        given(studentRepository.save(student)).willReturn(student);
-        System.out.println(student.getLastName());
-        // when - action or behaviour that we are going to test
-        StudentDto savedStudent = studentService.saveStudent(studentDto);
-        System.out.println("Email is: " + savedStudent.getEmail());
-        // then - verify the output
-        assertThat(savedStudent).isNotNull();
+        given(studentRepository.save(student)).willReturn(StudentMapper.INSTANCE.mapToEntity(studentDto));
+        // when
+        StudentDto savedStudentDto = studentService.saveStudent(StudentMapper.INSTANCE.mapToDto(student));
+        Student savedStudentEntity = StudentMapper.INSTANCE.mapToEntity(savedStudentDto);
+        System.out.println(savedStudentEntity.getLastName());
+        // then
+        assertThat(studentDto.getEmail()).isEqualTo(savedStudentEntity.getEmail());
     }
 
     @DisplayName("JUnit test for saveStudent() method")
     @Test
     public void givenStudentObject_whenSaveStudent_thenReturnStudentObjectEntity() {
-        // given - precondition or setup
+        // given
         given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.empty());
         given(studentRepository.save(student)).willReturn(student);
-        // when - action or behaviour that we are going to test
+        // when
         Student savedStudent = studentService.saveStudentEntity(student);
-        // then - verify the output
+        // then
         assertThat(savedStudent).isNotNull();
     }
 
     @DisplayName("JUnit test for saveStudent() method which throws exception")
     @Test
     public void givenExistingEmail_whenSaveStudent_thenThrowsException() {
-        // given - precondition or setup
+        // given
         given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.of(student));
-        // when - action or behaviour that we are going to test
+        // when
         assertThrows(UserAlreadyExistsException.class, () -> studentService.saveStudentEntity(student));
-        // then - verify the output
+        // then
         verify(studentRepository, never()).save(any(Student.class));
+    }
+
+    @DisplayName("JUnit test for getAllStudents() method [Positive Scenario]")
+    @Test
+    public void givenStudentList_whenGetAllStudents_thenReturnStudentList() {
+        // given
+        Student student1 = Student.builder()
+                .id(101L)
+                .firstName("John Paul")
+                .lastName("Ilacad")
+                .email("jpilacad@gmail.com")
+                .build();
+        given(studentRepository.findAll()).willReturn(List.of(student, student1));
+        // when
+        List<Student> students = studentService.getAllStudents();
+        // then
+        assertThat(students).isNotNull();
+        assertThat(students.size()).isEqualTo(2);
+    }
+
+    @DisplayName("JUnit test for getAllStudents() method [Negative scenario]")
+    @Test
+    public void givenEmptyStudentList_whenGetAllStudents_thenReturnEmptyStudentList() {
+        // given
+        given(studentRepository.findAll()).willReturn(Collections.emptyList());
+        // when
+        List<Student> students = studentService.getAllStudents();
+        // then
+        assertThat(students).isEmpty();
+        assertThat(students.size()).isEqualTo(0);
+    }
+
+    @DisplayName("JUnit test for getStudentById() method")
+    @Test
+    public void givenStudentId_whenFindById_thenReturnStudentObject() {
+        // given
+        given(studentRepository.findById(100L)).willReturn(Optional.of(student));
+        // when
+        Student savedStudent = studentService.getStudentById(student.getId()).get();
+        // then
+        assertThat(savedStudent).isEqualTo(student);
+        assertThat(savedStudent).isNotNull();
+    }
+
+    @DisplayName("JUnit test for updateStudent() method")
+    @Test
+    public void givenStudentObject_whenUpdateStudent_thenReturnUpdatedStudent() {
+        // given
+        given(studentRepository.save(student)).willReturn(student);
+        student.setEmail("johnchristopherilacad27@gmail.com");
+        student.setFirstName("John Cena");
+        // when
+        Student updatedStudent = studentService.updateStudent(student);
+        // then
+        assertThat(updatedStudent.getEmail()).isEqualTo("johnchristopherilacad27@gmail.com");
+        assertThat(updatedStudent.getFirstName()).isEqualTo("John Cena");
+    }
+
+    @DisplayName("JUnit test for deleteStudentById() method")
+    @Test
+    public void givenStudentId_whenDeleteStudentById_thenNothing() {
+        // given
+        long studentId = 100L;
+        willDoNothing().given(studentRepository).deleteById(studentId);
+        // when
+        studentService.deleteStudentById(studentId);
+        // then
+        verify(studentRepository, times(1)).deleteById(studentId);
     }
 }

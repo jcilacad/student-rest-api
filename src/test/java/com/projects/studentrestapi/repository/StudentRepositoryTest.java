@@ -32,11 +32,11 @@ public class StudentRepositoryTest {
     @DisplayName("JUnit test for save student operation")
     @Test
     public void givenStudentObject_whenSave_thenReturnSavedStudent() {
-        // given - precondition or setup
-
-        // when - action or behaviour that we are going to test
+        // given
+        // call setup() method
+        // when
         Student savedStudent = studentRepository.save(student);
-        // then - verify the output
+        // then
         assertThat(savedStudent).isNotNull();
         assertThat(savedStudent.getId()).isGreaterThanOrEqualTo(100);
     }
@@ -44,18 +44,17 @@ public class StudentRepositoryTest {
     @DisplayName("JUnit test for get all students operation")
     @Test
     public void givenStudentList_whenFindAll_thenStudentList() {
-        // given - precondition or setup
+        // given
         Student student2 = Student.builder()
                 .firstName("John")
                 .lastName("Cena")
                 .email("cena@sample.com")
                 .build();
-
         studentRepository.save(student);
         studentRepository.save(student2);
-        // when - action or behaviour that we are going to test
+        // when
         List<Student> students = studentRepository.findAll();
-        // then - verify the output
+        // then
         assertThat(students).isNotNull();
         assertThat(students.size()).isEqualTo(2);
     }
@@ -63,36 +62,36 @@ public class StudentRepositoryTest {
     @DisplayName("JUnit test for find by id operation")
     @Test
     public void givenStudentObject_whenFindById_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         Student savedStudent = studentRepository.save(student);
-        // when - action or behaviour that we are going to test
+        // when
         Student studentDB = studentRepository.findById(savedStudent.getId()).get();
-        // then - verify the output
+        // then
         assertThat(studentDB).isNotNull();
     }
 
     @DisplayName("JUnit test for find by email operation")
     @Test
     public void givenStudentEmail_whenFindByEmail_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         Student savedStudent = studentRepository.save(student);
-        // when - action or behaviour that we are going to test
+        // when
         Student existingStudent = studentRepository.findByEmail(savedStudent.getEmail()).get();
-        // then - verify the output
+        // then
         assertThat(existingStudent).isNotNull();
     }
 
     @DisplayName("JUnit test for update student operation")
     @Test
     public void givenStudentObject_whenUpdate_thenReturnStudentObject() {
-        // Given
+        // given
         Student savedStudent = studentRepository.save(student);
-        // When
+        // when
         Student existingStudent = studentRepository.findById(savedStudent.getId()).get();
         existingStudent.setEmail("johnchristopherilacad27@gmail.com");
         existingStudent.setFirstName("John Christopher");
         studentRepository.save(existingStudent);
-        // Then
+        // then
         assertThat(existingStudent.getEmail()).isEqualTo("johnchristopherilacad27@gmail.com");
         assertThat(existingStudent.getFirstName()).isEqualTo("John Christopher");
     }
@@ -100,66 +99,64 @@ public class StudentRepositoryTest {
     @DisplayName("JUnit test for delete student operation")
     @Test
     public void givenStudentObject_whenDelete_thenRemoveStudent() {
-        // given - precondition or setup
+        // given
         Student savedStudent = studentRepository.save(student);
-        // when - action or behaviour that we are going to test
+        // when
         studentRepository.deleteById(savedStudent.getId());
         Optional<Student> existingStudent = studentRepository.findById(savedStudent.getId());
-        // then - verify the output
+        // then
         assertThat(existingStudent).isEmpty();
     }
 
     @DisplayName("JUnit test for custom query using JPQL (index)")
     @Test
     public void givenFirstNameAndLastName_whenFindByJPQL_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         studentRepository.save(student);
         String firstName = "John Christopher";
         String lastName = "Ilacad";
-        // when - action or behaviour that we are going to test
+        // when
         Student existingStudent = studentRepository.findByJPQL(firstName, lastName);
-        // then - verify the output
+        // then
         assertThat(existingStudent).isNotNull();
     }
 
     @DisplayName("JUnit test for custom query using JPQL (name params)")
     @Test
     public void givenFirstNameAndLastName_whenFindByJPQLNamedParams_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         studentRepository.save(student);
         String firstName = "John Christopher";
         String lastName = "Ilacad";
-        // when - action or behaviour that we are going to test
+        // when
         Student existingStudent = studentRepository.findByJPQLNamedParams(firstName, lastName);
-        // then - verify the output
+        // then
         assertThat(existingStudent).isNotNull();
     }
 
     @DisplayName("JUnit test for custom native query using SQL (index)")
     @Test
     public void givenFirstNameAndLastName_whenFindByNativeQuery_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         studentRepository.save(student);
         String firstName = "John Christopher";
         String lastName = "Ilacad";
-        // when - action or behaviour that we are going to test
+        // when
         Student existingStudent = studentRepository.findByNativeSQL(firstName, lastName);
-
-        // then - verify the output
+        // then
         assertThat(existingStudent).isNotNull();
     }
 
     @DisplayName("JUnit test for custom native query using SQL (named params)")
     @Test
     public void givenFirstNameAndLastName_whenFindByNativeQueryNamed_thenReturnStudentObject() {
-        // given - precondition or setup
+        // given
         studentRepository.save(student);
         String firstName = "John Christopher";
         String lastName = "Ilacad";
-        // when - action or behaviour that we are going to test
+        // when
         Student existingStudent = studentRepository.findByNativeSQLNamed(firstName, lastName);
-
-        // then - verify the output
+        // then
         assertThat(existingStudent).isNotNull();
     }
 }
