@@ -1,9 +1,7 @@
 package com.projects.studentrestapi.service;
 
-import com.projects.studentrestapi.dto.StudentDto;
 import com.projects.studentrestapi.entity.Student;
 import com.projects.studentrestapi.exception.UserAlreadyExistsException;
-import com.projects.studentrestapi.mapper.StudentMapper;
 import com.projects.studentrestapi.repository.StudentRepository;
 import com.projects.studentrestapi.service.impl.StudentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,27 +43,6 @@ public class StudentServiceTest {
                 .build();
     }
 
-    // TODO: Find a reference why using mapper didn't work on this
-    @Test
-    public void givenStudentObject_whenSaveStudent_thenReturnStudentObject() {
-        // given
-        StudentDto studentDto = StudentDto.builder()
-                .id(100L)
-                .firstName("John Christopher")
-                .lastName("Ilacad")
-                .email("jcdilacad2020@plm.edu.ph")
-                .build();
-        Student student = StudentMapper.INSTANCE.mapToEntity(studentDto);
-        given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.empty());
-        given(studentRepository.save(student)).willReturn(StudentMapper.INSTANCE.mapToEntity(studentDto));
-        // when
-        StudentDto savedStudentDto = studentService.saveStudent(StudentMapper.INSTANCE.mapToDto(student));
-        Student savedStudentEntity = StudentMapper.INSTANCE.mapToEntity(savedStudentDto);
-        System.out.println(savedStudentEntity.getLastName());
-        // then
-        assertThat(studentDto.getEmail()).isEqualTo(savedStudentEntity.getEmail());
-    }
-
     @DisplayName("JUnit test for saveStudent() method")
     @Test
     public void givenStudentObject_whenSaveStudent_thenReturnStudentObjectEntity() {
@@ -73,7 +50,7 @@ public class StudentServiceTest {
         given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.empty());
         given(studentRepository.save(student)).willReturn(student);
         // when
-        Student savedStudent = studentService.saveStudentEntity(student);
+        Student savedStudent = studentService.saveStudent(student);
         // then
         assertThat(savedStudent).isNotNull();
     }
@@ -84,7 +61,7 @@ public class StudentServiceTest {
         // given
         given(studentRepository.findByEmail(student.getEmail())).willReturn(Optional.of(student));
         // when
-        assertThrows(UserAlreadyExistsException.class, () -> studentService.saveStudentEntity(student));
+        assertThrows(UserAlreadyExistsException.class, () -> studentService.saveStudent(student));
         // then
         verify(studentRepository, never()).save(any(Student.class));
     }
@@ -125,7 +102,7 @@ public class StudentServiceTest {
         // given
         given(studentRepository.findById(100L)).willReturn(Optional.of(student));
         // when
-        Student savedStudent = studentService.getStudentById(student.getId()).get();
+        Student savedStudent = studentService.getStudentById(student.getId());
         // then
         assertThat(savedStudent).isEqualTo(student);
         assertThat(savedStudent).isNotNull();
