@@ -32,9 +32,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student getStudentById(long id) {
-        return studentRepository.findById(id)
-                .orElseThrow(ResourceNotFoundException::new);
+    public Optional<Student> getStudentById(long id) {
+        return Optional.ofNullable(studentRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new));
     }
 
     @Override
