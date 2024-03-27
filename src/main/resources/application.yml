@@ -3,6 +3,12 @@ spring:
     import: file:env.properties
   profiles:
     active: ${ENVIRONMENT_PROFILE}
+  datasource:
+  jpa:
+    properties:
+      hibernate.show_sql: true
+      hibernate.format_sql: true
+      hibernate.highlight_sql: true
 
 server:
   port: 8081

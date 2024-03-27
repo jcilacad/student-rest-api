@@ -1,6 +1,7 @@
 package com.projects.studentrestapi.repository;
 
 import com.projects.studentrestapi.entity.Student;
+import com.projects.studentrestapi.integration.AbstractContainerBaseTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class StudentRepositoryIT {
+public class StudentRepositoryIT extends AbstractContainerBaseTest {
 
     @Autowired
     private StudentRepository studentRepository;
